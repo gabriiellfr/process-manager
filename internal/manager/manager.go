@@ -18,11 +18,11 @@ func NewProcessManager() *ProcessManager {
 }
 
 // AddProcess adds a new process to the manager and starts it.
-func (pm *ProcessManager) AddProcess(command string) {
+func (pm *ProcessManager) AddProcess(processName string, command string) {
 	pm.mu.Lock()
 	defer pm.mu.Unlock()
 
-	p := process.NewProcess(command)
+	p := process.NewProcess(processName, command)
 	processID := pm.getNextProcessID()
 	p.SetProcessID(processID)
 

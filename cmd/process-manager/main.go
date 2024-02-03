@@ -6,6 +6,7 @@ import (
 	"os"
 	"os/signal"
 	"process-manager/internal/manager"
+	"process-manager/internal/utils"
 	"syscall"
 )
 
@@ -14,9 +15,7 @@ func main() {
 
 	// Start the manager in the background
 	go func() {
-		// Add your actual processes here
-		// pm.AddProcess("node your-node-app.js")
-		// pm.AddProcess("python your-python-script.py")
+		pm.AddProcess("node server", "NODE_ENV=development node /Users/gabrielsantos/Documents/GitHub/react-dashboard-server/src/index.js")
 	}()
 
 	// Handle interrupt signals for graceful shutdown
@@ -40,33 +39,17 @@ func main() {
 
 		switch command {
 		case "start":
-			// Add a new process to the manager and start it (customize this part)
-			fmt.Print("Enter the command for the new process: ")
-			scanner.Scan()
-			newCommand := scanner.Text()
-			pm.AddProcess(newCommand)
+			newName, newCommand := utils.PromptAndAddProcess(scanner)
+
+			pm.AddProcess(newName, newCommand)
 		case "stop":
-			// Stop a specific process (customize this part)
-			fmt.Print("Enter the Process ID to stop: ")
-			var processID int
-			fmt.Scan(&processID)
+			processID := utils.PromptAndStopProcess(scanner)
+
 			pm.StopProcess(processID)
 		case "list":
-			// List running processes
 			runningProcesses := pm.ListProcesses()
-			if len(runningProcesses) == 0 {
-				fmt.Println("No running processes.")
-			} else {
-				fmt.Println("================================================================================================")
-				fmt.Printf("%-30s | %-6s | %-8s | %-8s | %-15s | %-10s | %-20s\n",
-					"Process Name", "ID", "PID", "Status", "Restart Count", "Uptime", "Log Path")
-				fmt.Println("================================================================================================")
-				for _, p := range runningProcesses {
-					fmt.Printf("%-30s | %-6d | %-8d | %-8s | %-13d | %-15s | %-20s\n",
-						p.Command, p.ProcessID(), os.Getpid(), "Running", p.RestartCount(), p.Uptime(), fmt.Sprintf("logs/process_%d.log", p.ProcessID()))
-				}
-				fmt.Println("================================================================================================")
-			}
+
+			utils.ListProcesses(runningProcesses)
 		case "exit":
 			// Stop all processes and exit
 			pm.StopAllProcesses()

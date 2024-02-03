@@ -15,13 +15,13 @@ type Logger struct {
 }
 
 // NewLogger creates a new instance of the Logger.
-func NewLogger(processID int) (*Logger, error) {
+func NewLogger(processID int, processName string) (*Logger, error) {
 	err := os.MkdirAll("logs", os.ModePerm)
 	if err != nil {
 		return nil, fmt.Errorf("error creating logs directory: %w", err)
 	}
 
-	fileName := fmt.Sprintf("logs/process_%d.log", processID)
+	fileName := fmt.Sprintf("logs/process_%s_%d.log", processName, processID)
 	file, err := os.OpenFile(fileName, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 	if err != nil {
 		return nil, fmt.Errorf("error opening log file: %w", err)
